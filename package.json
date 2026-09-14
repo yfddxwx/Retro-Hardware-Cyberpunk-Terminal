@@ -1,0 +1,21 @@
+{
+  "name": "retro-hardware-cyberpunk-terminal",
+  "version": "1.1.0",
+  "description": "80s-90s Retro Industrial Cyberpunk Hardware Terminal with pure Web Audio synthesis",
+  "author": "yfddxwx",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yfddxwx/Retro-Hardware-Cyberpunk-Terminal.git"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5",
+    "vite": "^5.2.11"
+  }
+}

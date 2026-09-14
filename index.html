@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CYBERDYNE MIL-SPEC TERMINAL MODEL-84 | Retro Cyberpunk Data Terminal</title>
+    <meta name="description" content="80s-90s Retro Industrial Cyberpunk Hardware Terminal - Realtime Hex, ASCII, Base64 and Morse Code Transceiver with pure Web Audio synthesis" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./src/style.css" />
+  </head>
+  <body class="theme-green">
+    <!-- 主机架机箱包装 -->
+    <div class="terminal-chassis" id="chassis">
+      <!-- 机箱四个角的工业沉头螺栓 -->
+      <div class="screw screw-tl"></div>
+      <div class="screw screw-tr"></div>
+      <div class="screw screw-bl"></div>
+      <div class="screw screw-br"></div>
+
+      <!-- 顶栏：型号铭牌、状态指示灯、旋钮 -->
+      <header class="chassis-header">
+        <div class="header-brand">
+          <div class="hazard-stripe"></div>
+          <div class="brand-text">
+            <span class="brand-title">CYBERDYNE MIL-SPEC MODEL-84</span>
+            <span class="brand-sub">HEX/ASCII/MORSE CODER & DATA GENERATOR // HIGH VOLTAGE CRT UNIT</span>
+          </div>
+          <div class="hazard-stripe"></div>
+        </div>
+
+        <div class="header-controls">
+          <!-- CRT 荧光色彩切换 -->
+          <div class="control-group">
+            <label class="control-label">PHOSPHOR COLOR</label>
+            <div class="phosphor-selector">
+              <button class="color-btn active" data-theme="theme-green" title="Green Phosphor (P1/P31)">P1-GRN</button>
+              <button class="color-btn" data-theme="theme-amber" title="Amber Phosphor (P3)">P3-AMB</button>
+              <button class="color-btn" data-theme="theme-cyan" title="Cyan Phosphor (P4/P11)">P4-CYN</button>
+              <button class="color-btn" data-theme="theme-white" title="Paper White Monochrome (P4-WHT)">P4-WHT</button>
+              <button class="color-btn" data-theme="theme-red" title="Plasma Alert Red (P2-RED)">P2-RED</button>
+              <button class="color-btn hw-btn-accent" id="btn-toggle-curve" title="Toggle 3D Curved CRT Bezel">CURVE: ON</button>
+            </div>
+          </div>
+
+          <!-- 音量控制与静音 -->
+          <div class="control-group audio-knob-group">
+            <label class="control-label">SPEAKER LEVEL</label>
+            <div class="audio-controls-row">
+              <input type="range" id="volume-slider" min="0" max="1" step="0.05" value="0.8" class="hw-slider" title="Master Audio Gain" />
+              <button id="mute-btn" class="hw-mini-btn" title="Toggle Mute">MUTE</button>
+            </div>
+          </div>
+
+          <!-- 物理状态指示灯 (LED Matrix) -->
+          <div class="led-rack">
+            <div class="led-slot">
+              <div class="led-bulb led-power" id="led-power"></div>
+              <span class="led-tag">PWR</span>
+            </div>
+            <div class="led-slot">
+              <div class="led-bulb led-carrier" id="led-carrier"></div>
+              <span class="led-tag">CARRIER</span>
+            </div>
+            <div class="led-slot">
+              <div class="led-bulb led-busy" id="led-busy"></div>
+              <span class="led-tag">RX/TX</span>
+            </div>
+            <div class="led-slot">
+              <div class="led-bulb led-fault" id="led-fault"></div>
+              <span class="led-tag">PARITY</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- 主控制与显示区域 -->
+      <main class="chassis-body">
+        <!-- 左侧物理硬件操纵区 -->
+        <aside class="hardware-console">
+          <!-- 核心总闸：重型电源机械开关 -->
+          <div class="hw-module power-module">
+            <div class="module-plate-title">MAIN POWER BREAKER</div>
+            <div class="toggle-switch-wrapper">
+              <div class="switch-guard">SAFETY INTERLOCK</div>
+              <label class="switch-container">
+                <input type="checkbox" id="power-toggle" />
+                <span class="switch-lever">
+                  <span class="lever-tip"></span>
+                </span>
+              </label>
+              <div class="switch-status-labels">
+                <span class="lbl-off">STANDBY</span>
+                <span class="lbl-on">ARMED</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 转换协议选择模式 -->
+          <div class="hw-module">
+            <div class="module-plate-title">CODEC MODE</div>
+            <div class="mode-button-group">
+              <button class="mode-btn active" data-mode="text-to-hex">TXT &rarr; HEX</button>
+              <button class="mode-btn" data-mode="hex-to-text">HEX &rarr; TXT</button>
+              <button class="mode-btn" data-mode="text-to-base64">TXT &rarr; B64</button>
+              <button class="mode-btn" data-mode="base64-to-text">B64 &rarr; TXT</button>
+              <button class="mode-btn" data-mode="text-to-morse">TXT &rarr; MORSE</button>
+              <button class="mode-btn" data-mode="morse-to-text">MORSE &rarr; TXT</button>
+              <button class="mode-btn" data-mode="text-to-bin">TXT &rarr; BIN</button>
+              <button class="mode-btn" data-mode="bin-to-text">BIN &rarr; TXT</button>
+              <button class="mode-btn" data-mode="rot13">ROT-13 CIPHER</button>
+            </div>
+          </div>
+
+          <!-- 发生器与辅助功能按键 -->
+          <div class="hw-module">
+            <div class="module-plate-title">DATA GENERATOR</div>
+            <div class="aux-button-grid">
+              <button id="btn-hex-dump" class="hw-action-btn">
+                <span class="key-icon">&bull;</span> GEN HEX DUMP
+              </button>
+              <button id="btn-cyber-packet" class="hw-action-btn">
+                <span class="key-icon">&bull;</span> TELEMETRY PKT
+              </button>
+              <button id="btn-clear-screen" class="hw-action-btn btn-danger">
+                <span class="key-icon">&times;</span> PURGE RAM
+              </button>
+            </div>
+          </div>
+
+          <!-- 铭牌规格印章 -->
+          <div class="spec-plate">
+            <div class="spec-row"><span>SERIAL:</span> <strong>#84-9092-B</strong></div>
+            <div class="spec-row"><span>FREQ:</span> <strong>15.75 kHz CRT</strong></div>
+            <div class="spec-row"><span>BUS:</span> <strong>16-BIT PARALLEL</strong></div>
+            <div class="caution-badge">CAUTION: HIGH VOLTAGE INSIDE</div>
+          </div>
+        </aside>
+
+        <!-- 中部显像管 CRT 屏幕结构 -->
+        <section class="crt-chassis">
+          <!-- 屏幕边框内凹外壳与反光遮光罩 -->
+          <div class="crt-bezel">
+            <!-- 屏幕本体 -->
+            <div class="crt-screen curvature-active" id="crt-screen">
+              <!-- CRT 纯 CSS 特效层：扫描线、晕影、噪点光栅 -->
+              <div class="crt-overlay-scanlines"></div>
+              <div class="crt-overlay-vignette"></div>
+              <div class="crt-overlay-curvature"></div>
+
+              <!-- 关机状态蒙层遮罩 -->
+              <div class="crt-power-off-mask" id="power-off-mask">
+                <div class="off-prompt-box">
+                  <div class="warning-triangle">&#9888;</div>
+                  <div class="off-title">TERMINAL OFFLINE</div>
+                  <div class="off-hint">FLIP [MAIN POWER BREAKER] SWITCH TO INITIALIZE CRT TUBE & BUS</div>
+                </div>
+              </div>
+
+              <!-- 终端屏幕真实显示内容 (加电后渲染) -->
+              <div class="terminal-content" id="terminal-content">
+                <!-- 顶部状态提示行 -->
+                <div class="term-status-bar">
+                  <span class="sys-id">SYSTEM: CYBERDYNE MIL-SPEC V5.0</span>
+                  <span class="mode-display" id="display-mode">MODE: TXT &rarr; HEX</span>
+                  <span class="baud-display">BAUD: 9600 [PARITY: NONE]</span>
+                  <span class="clock-display" id="term-clock">00:00:00</span>
+                </div>
+
+                <!-- 双轨仪表舱：音频-射频示波器 + 机械阻尼模拟 VU 电平表 -->
+                <div class="visualizer-deck">
+                  <!-- 示波器 -->
+                  <div class="oscilloscope-panel" id="oscilloscope-container">
+                    <div class="scope-header">
+                      <span class="scope-title">RF SIGNAL MONITOR (REALTIME BUS WAVEFORM)</span>
+                      <span class="scope-state" id="morse-playing-indicator">CARRIER IDLE</span>
+                    </div>
+                    <canvas id="scope-canvas" width="460" height="42"></canvas>
+                  </div>
+
+                  <!-- 模拟指针 VU 电平表 -->
+                  <div class="vu-meter-panel">
+                    <div class="vu-header">
+                      <span class="vu-title">MODULATION LEVEL (VU)</span>
+                      <div class="vu-peak-slot">
+                        <span class="vu-peak-led" id="vu-peak-led"></span>
+                        <span class="vu-peak-tag">PEAK</span>
+                      </div>
+                    </div>
+                    <canvas id="vu-canvas" width="220" height="42"></canvas>
+                  </div>
+                </div>
+
+                <!-- 输入与输出双区域 -->
+                <div class="term-workspace">
+                  <!-- 输入控制台 -->
+                  <div class="console-box in-box">
+                    <div class="box-header">
+                      <span class="box-label">&gt; INPUT STREAM [<span id="input-type-label">TEXT</span>]</span>
+                      <span class="box-tools">
+                        <button id="btn-paste-in" class="term-text-btn" title="Paste">[PASTE]</button>
+                        <button id="btn-clear-in" class="term-text-btn" title="Clear">[CLEAR]</button>
+                      </span>
+                    </div>
+                    <textarea id="term-input" class="term-textarea" spellcheck="false" placeholder="ENTER TELETYPE DATA STREAM HERE..."></textarea>
+                  </div>
+
+                  <!-- 动作与信息中间条 -->
+                  <div class="term-action-divider">
+                    <div class="telemetry-info">
+                      <span>CHARS: <b id="stat-chars">0</b></span>
+                      <span>BYTES: <b id="stat-bytes">0</b></span>
+                      <span>CRC32: <b id="stat-crc">0x00000000</b></span>
+                      <span>XOR: <b id="stat-xor">0x00</b></span>
+                    </div>
+                    <div class="action-buttons-rack">
+                      <!-- 摩尔斯发报速度调节 -->
+                      <div class="morse-speed-box" title="Morse Code Transmission Rate">
+                        <span class="speed-tag">RATE:</span>
+                        <select id="morse-speed-select" class="hw-select">
+                          <option value="0.10">10 WPM</option>
+                          <option value="0.065" selected>18 WPM</option>
+                          <option value="0.045">26 WPM</option>
+                        </select>
+                      </div>
+
+                      <button id="btn-morse-play" class="action-btn morse-btn" title="Play Morse Audio Transmission">
+                        &#9658; AUDIBLE TRANSMIT
+                      </button>
+                      <button id="btn-export-wav" class="action-btn btn-export" title="Export Morse transmission directly as .WAV file">
+                        💾 EXPORT WAV
+                      </button>
+                      <button id="btn-save-log" class="action-btn" title="Save record to LocalStorage">
+                        [STORE LOG]
+                      </button>
+                      <button id="btn-export-txt" class="action-btn" title="Download teletype transcript as .TXT">
+                        📄 EXPORT TXT
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- 输出终端机 -->
+                  <div class="console-box out-box">
+                    <div class="box-header">
+                      <span class="box-label">&gt;&gt; OUTPUT DECODED [<span id="output-type-label">HEX STREAM</span>]</span>
+                      <span class="box-tools">
+                        <button id="btn-copy-out" class="term-text-btn" title="Copy to clipboard">[COPY]</button>
+                        <button id="btn-swap-stream" class="term-text-btn" title="Reverse Input/Output">[SWAP &larr;&rarr;]</button>
+                      </span>
+                    </div>
+                    <textarea id="term-output" class="term-textarea output-area" readonly spellcheck="false" placeholder="OUTPUT WILL STREAM HERE..."></textarea>
+                  </div>
+                </div>
+
+                <!-- 历史存根抽屉 (Data Log Vault) -->
+                <div class="history-vault-panel">
+                  <div class="history-header">
+                    <span class="history-title">&#9660; LOCALSTORAGE TRANSMISSION LOG</span>
+                    <div class="history-actions">
+                      <span id="history-count">0 RECORDS</span>
+                      <button id="btn-clear-history" class="term-text-btn">[PURGE LOGS]</button>
+                    </div>
+                  </div>
+                  <div class="history-list" id="history-list">
+                    <!-- 动态生成记录条目 -->
+                    <div class="history-empty">NO HISTORICAL LOGS RECORDED YET.</div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- 底栏工业脚注 -->
+      <footer class="chassis-footer">
+        <div class="footer-left">
+          <span class="mil-code">NATO CODIFICATION: 5820-01-294-8841</span>
+          <span class="dev-spec">HARDWARE REV: 2.4B &bull; THERMAL OK</span>
+        </div>
+        <div class="footer-right">
+          <span class="status-msg" id="bottom-status">READY FOR DISPATCH</span>
+        </div>
+      </footer>
+    </div>
+
+    <!-- 挂载脚本 -->
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

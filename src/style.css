@@ -1,0 +1,1190 @@
+/* -------------------------------------------------------------
+   RETRO HARDWARE CYBERPUNK TERMINAL - INDUSTRIAL MIL-SPEC CRT
+   Pure CSS Physics-based Chassis, CRT Scanlines & Luminescence
+   ------------------------------------------------------------- */
+
+:root {
+  /* 基础机壳物理色调 (阳极氧化铝拉丝与军工深灰) */
+  --chassis-bg: #1e2023;
+  --chassis-panel: #282c31;
+  --chassis-border: #3c424a;
+  --chassis-metal-light: #4f5661;
+  --chassis-metal-dark: #121416;
+  --screw-color: #606874;
+
+  /* 默认 CRT 荧光绿 (Phosphor P1/P31) */
+  --crt-bg: #071009;
+  --crt-screen-inner: #040805;
+  --crt-primary: #33ff33;
+  --crt-glow: rgba(51, 255, 51, 0.55);
+  --crt-dim: #1d7e22;
+  --crt-accent: #80ff80;
+  --crt-scanline-opacity: 0.18;
+
+  --font-mono: 'Share Tech Mono', 'VT323', Consolas, 'Courier New', monospace;
+  --font-pixel: 'VT323', 'Share Tech Mono', monospace;
+}
+
+/* 琥珀荧光模式 (Phosphor P3 - Amber) */
+body.theme-amber {
+  --crt-bg: #140c03;
+  --crt-screen-inner: #0a0601;
+  --crt-primary: #ffb000;
+  --crt-glow: rgba(255, 176, 0, 0.55);
+  --crt-dim: #8c5b00;
+  --crt-accent: #ffd166;
+}
+
+/* 冷光赛博青模式 (Phosphor P4 - Cyan) */
+body.theme-cyan {
+  --crt-bg: #041014;
+  --crt-screen-inner: #02080a;
+  --crt-primary: #00f0ff;
+  --crt-glow: rgba(0, 240, 255, 0.55);
+  --crt-dim: #007780;
+  --crt-accent: #85f8ff;
+}
+
+/* 白光显像管模式 (Phosphor P4-WHT Monochrome) */
+body.theme-white {
+  --crt-bg: #0d0f12;
+  --crt-screen-inner: #08090a;
+  --crt-primary: #e6edf3;
+  --crt-glow: rgba(230, 237, 243, 0.45);
+  --crt-dim: #6e7681;
+  --crt-accent: #ffffff;
+}
+
+/* 等离子高危红警报模式 (Phosphor P2-RED Plasma Alert) */
+body.theme-red {
+  --crt-bg: #140404;
+  --crt-screen-inner: #0a0101;
+  --crt-primary: #ff3838;
+  --crt-glow: rgba(255, 56, 56, 0.6);
+  --crt-dim: #8b0000;
+  --crt-accent: #ff8585;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: text;
+}
+
+body {
+  background-color: #0b0c0e;
+  background-image: 
+    radial-gradient(circle at 50% 30%, #171a1f 0%, #08090a 100%),
+    repeating-linear-gradient(45deg, rgba(0,0,0,0.15) 0px, rgba(0,0,0,0.15) 2px, transparent 2px, transparent 4px);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  font-family: var(--font-mono);
+  color: #c0c6ce;
+  overflow-x: hidden;
+}
+
+/* -------------------------------------------------------------
+   1. 外部加固机架机箱 (Chassis)
+   ------------------------------------------------------------- */
+.terminal-chassis {
+  position: relative;
+  width: 100%;
+  max-width: 1240px;
+  background: linear-gradient(180deg, var(--chassis-panel) 0%, var(--chassis-bg) 100%);
+  border: 4px solid var(--chassis-border);
+  border-radius: 8px;
+  box-shadow: 
+    0 25px 60px rgba(0, 0, 0, 0.85),
+    inset 1px 1px 0px var(--chassis-metal-light),
+    inset -2px -2px 0px var(--chassis-metal-dark),
+    0 0 0 2px #0a0b0d;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* 沉头六角螺钉纯 CSS 绘制 */
+.screw {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #8e99a8, #2a2d33);
+  box-shadow: 
+    inset 1px 1px 2px rgba(255,255,255,0.4),
+    1px 2px 4px rgba(0,0,0,0.7);
+  border: 1px solid #1f2226;
+  z-index: 20;
+}
+.screw::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 2px;
+  background: #111;
+  transform: translate(-50%, -50%) rotate(42deg);
+}
+.screw-tl { top: 8px; left: 8px; }
+.screw-tr { top: 8px; right: 8px; }
+.screw-bl { bottom: 8px; left: 8px; }
+.screw-br { bottom: 8px; right: 8px; }
+
+/* -------------------------------------------------------------
+   2. 顶栏机箱仪表 (Chassis Header)
+   ------------------------------------------------------------- */
+.chassis-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: #1a1c20;
+  border: 1px solid #2f343c;
+  border-radius: 4px;
+  padding: 10px 18px;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hazard-stripe {
+  width: 24px;
+  height: 32px;
+  background: repeating-linear-gradient(
+    -45deg,
+    #ffcc00,
+    #ffcc00 6px,
+    #111111 6px,
+    #111111 12px
+  );
+  border: 1px solid #000;
+  border-radius: 2px;
+  box-shadow: inset 0 0 2px rgba(0,0,0,0.8);
+}
+
+.brand-title {
+  display: block;
+  font-family: var(--font-pixel);
+  font-size: 1.5rem;
+  letter-spacing: 2px;
+  color: #e0e5eb;
+  text-shadow: 1px 1px 0px #000;
+  line-height: 1.1;
+}
+
+.brand-sub {
+  display: block;
+  font-size: 0.72rem;
+  letter-spacing: 1px;
+  color: #7b8594;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.control-label {
+  font-size: 0.65rem;
+  letter-spacing: 1px;
+  color: #7a8494;
+  font-weight: bold;
+}
+
+/* 荧光管切换按钮组 */
+.phosphor-selector {
+  display: flex;
+  gap: 3px;
+  background: #0f1013;
+  padding: 3px;
+  border-radius: 3px;
+  border: 1px solid #333842;
+}
+
+.color-btn {
+  background: #1c2026;
+  border: 1px solid #323842;
+  color: #8c97a8;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  padding: 4px 8px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.15s ease;
+}
+.color-btn:hover {
+  color: #fff;
+  background: #2b313b;
+}
+.color-btn.active {
+  background: #394250;
+  color: #fff;
+  border-color: #617085;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.2);
+}
+
+/* 旋钮与音频控制 */
+.audio-controls-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hw-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 80px;
+  height: 6px;
+  background: #0d0f12;
+  border: 1px solid #3d4450;
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+.hw-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #8d98a7 30%, #30353d 100%);
+  border: 1px solid #111;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.8);
+  cursor: pointer;
+}
+
+.hw-mini-btn {
+  background: #252a32;
+  border: 1px solid #434c5a;
+  color: #9aa5b5;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  padding: 3px 6px;
+  cursor: pointer;
+  border-radius: 2px;
+}
+.hw-mini-btn.muted {
+  background: #7a1f1f;
+  color: #ffcccc;
+  border-color: #aa3333;
+}
+
+/* 拟真 LED 状态指示矩阵 */
+.led-rack {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #111316;
+  padding: 6px 12px;
+  border: 1px solid #2e343e;
+  border-radius: 4px;
+}
+
+.led-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.led-bulb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #2b2020;
+  border: 1px solid #141414;
+  box-shadow: inset 1px 1px 2px rgba(255,255,255,0.2);
+  transition: all 0.1s ease;
+}
+
+.led-tag {
+  font-size: 0.6rem;
+  color: #646f80;
+  font-weight: bold;
+}
+
+/* LED 激活发光状态 */
+.led-power.active {
+  background: #27e833;
+  box-shadow: 0 0 10px #27e833, 0 0 20px #27e833;
+}
+.led-carrier.active {
+  background: #00e5ff;
+  box-shadow: 0 0 10px #00e5ff;
+}
+.led-busy.active {
+  background: #ffb700;
+  box-shadow: 0 0 12px #ffb700;
+}
+.led-fault.active {
+  background: #ff3333;
+  box-shadow: 0 0 12px #ff3333;
+}
+
+/* -------------------------------------------------------------
+   3. 主体布局 (Main Chassis Body)
+   ------------------------------------------------------------- */
+.chassis-body {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 16px;
+  min-height: 680px;
+}
+
+@media (max-width: 960px) {
+  .chassis-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* -------------------------------------------------------------
+   4. 左侧硬件控制台 (Hardware Console)
+   ------------------------------------------------------------- */
+.hardware-console {
+  background: #1c1f24;
+  border: 1px solid #2d333d;
+  border-radius: 6px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.hw-module {
+  background: #22262d;
+  border: 1px solid #363d48;
+  border-radius: 4px;
+  padding: 10px;
+  position: relative;
+}
+
+.module-plate-title {
+  font-size: 0.68rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  color: #929ead;
+  border-bottom: 1px solid #333a46;
+  padding-bottom: 4px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+/* 纯 CSS 重型工业电源开关 (Heavy-Duty Toggle Switch) */
+.power-module {
+  background: #191c21;
+  border: 1px solid #47505e;
+}
+
+.toggle-switch-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.switch-guard {
+  font-size: 0.6rem;
+  letter-spacing: 1.5px;
+  color: #e6a100;
+  border: 1px dashed #7a580a;
+  padding: 2px 8px;
+  border-radius: 2px;
+  background: rgba(255, 176, 0, 0.05);
+}
+
+.switch-container {
+  position: relative;
+  display: inline-block;
+  width: 52px;
+  height: 90px;
+  background: #0f1114;
+  border: 2px solid #383f4b;
+  border-radius: 6px;
+  box-shadow: 
+    inset 0 4px 8px rgba(0, 0, 0, 0.9),
+    0 2px 4px rgba(255,255,255,0.05);
+  cursor: pointer;
+}
+
+.switch-container input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switch-lever {
+  position: absolute;
+  top: 52px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 14px;
+  height: 32px;
+  background: linear-gradient(90deg, #586170 0%, #adb9cb 50%, #444c58 100%);
+  border-radius: 6px 6px 4px 4px;
+  box-shadow: 0 5px 8px rgba(0,0,0,0.8);
+  transition: all 0.16s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.lever-tip {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 22px;
+  height: 16px;
+  border-radius: 8px;
+  background: radial-gradient(circle at 40% 35%, #ff3b3b, #700a0a);
+  border: 1px solid #290000;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.9);
+}
+
+/* 开启状态 (ARMED) */
+.switch-container input:checked + .switch-lever {
+  top: 14px;
+}
+.switch-container input:checked + .switch-lever .lever-tip {
+  background: radial-gradient(circle at 40% 35%, #2eff40, #0a5f10);
+  border-color: #032e08;
+  box-shadow: 0 0 10px rgba(46, 255, 64, 0.7);
+}
+
+.switch-status-labels {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 0.65rem;
+  font-weight: bold;
+}
+.lbl-off { color: #853333; }
+.lbl-on { color: #2e8b38; }
+
+/* 模式转换按钮 */
+.mode-button-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.mode-btn {
+  background: #181b20;
+  border: 1px solid #333944;
+  color: #8f9ba8;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  padding: 8px 4px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.12s;
+  text-align: center;
+}
+.mode-btn:hover {
+  background: #252a33;
+  color: #fff;
+  border-color: #4a5464;
+}
+.mode-btn.active {
+  background: #2c3542;
+  color: var(--crt-accent);
+  border-color: #5d6d85;
+  box-shadow: inset 0 0 6px rgba(0,0,0,0.5), 0 0 8px rgba(255,255,255,0.08);
+}
+
+/* 辅助与数据生成按键 */
+.aux-button-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hw-action-btn {
+  background: #272d36;
+  border: 1px solid #404958;
+  border-bottom: 3px solid #1a1e24;
+  color: #abb6c4;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  padding: 7px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.08s ease;
+}
+.hw-action-btn:hover {
+  background: #313844;
+  color: #fff;
+}
+.hw-action-btn:active {
+  transform: translateY(2px);
+  border-bottom-width: 1px;
+}
+.hw-action-btn.btn-danger {
+  border-color: #632d2d;
+  color: #e58888;
+}
+.hw-action-btn.btn-danger:hover {
+  background: #4a1f1f;
+  color: #fff;
+}
+
+/* 规格铭牌 */
+.spec-plate {
+  margin-top: auto;
+  background: #14161a;
+  border: 1px solid #2c323c;
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  color: #6a7482;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.spec-row {
+  display: flex;
+  justify-content: space-between;
+}
+.spec-row strong {
+  color: #929fac;
+}
+.caution-badge {
+  margin-top: 4px;
+  color: #ff9900;
+  font-size: 0.6rem;
+  text-align: center;
+  border: 1px solid #663e00;
+  padding: 2px;
+  background: rgba(255,153,0,0.05);
+}
+
+/* -------------------------------------------------------------
+   5. CRT 显像管与屏幕框 (CRT Screen & Bezel)
+   ------------------------------------------------------------- */
+.crt-chassis {
+  display: flex;
+  flex-direction: column;
+}
+
+.crt-bezel {
+  position: relative;
+  background: #090b0d;
+  border: 8px solid #1f2329;
+  border-radius: 18px;
+  box-shadow: 
+    inset 0 0 25px rgba(0, 0, 0, 0.95),
+    inset 0 0 8px #000,
+    0 10px 30px rgba(0, 0, 0, 0.9);
+  padding: 14px;
+  height: 100%;
+  min-height: 640px;
+  display: flex;
+}
+
+.crt-screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: var(--crt-bg);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 
+    inset 0 0 60px rgba(0, 0, 0, 0.9),
+    inset 0 0 15px rgba(0, 0, 0, 0.95);
+  display: flex;
+  flex-direction: column;
+  transition: background-color 0.3s ease;
+}
+
+/* CRT 光栅微抖动 (Flicker) */
+@keyframes crt-flicker {
+  0% { opacity: 0.992; }
+  50% { opacity: 1; }
+  100% { opacity: 0.995; }
+}
+
+.crt-screen {
+  animation: crt-flicker 0.15s infinite;
+}
+
+/* 扫描线 (Scanlines) */
+.crt-overlay-scanlines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.45) 50%
+  ), 
+  linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.04),
+    rgba(0, 255, 0, 0.02),
+    rgba(0, 0, 255, 0.04)
+  );
+  background-size: 100% 3px, 6px 100%;
+  pointer-events: none;
+  z-index: 10;
+  opacity: var(--crt-scanline-opacity);
+}
+
+/* 屏幕四周暗角与高光遮罩 (Vignette & Curvature) */
+.crt-overlay-vignette {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, transparent 65%, rgba(0, 0, 0, 0.7) 100%);
+  pointer-events: none;
+  z-index: 11;
+}
+
+.crt-overlay-curvature {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 12px;
+  box-shadow: inset 0 0 35px rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+  z-index: 12;
+  transition: all 0.3s ease;
+}
+
+.crt-screen.curvature-active {
+  border-radius: 22px;
+  box-shadow: 
+    inset 0 0 80px rgba(0, 0, 0, 0.95),
+    inset 0 0 25px rgba(0, 0, 0, 0.95),
+    0 0 20px rgba(0, 0, 0, 0.85);
+}
+
+.crt-screen.curvature-active .crt-overlay-curvature {
+  background: radial-gradient(circle at 50% 50%, transparent 60%, rgba(0, 0, 0, 0.6) 90%, rgba(0, 0, 0, 0.9) 100%);
+  border-radius: 22px;
+  box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.9);
+}
+
+.hw-btn-accent {
+  border-color: var(--crt-accent) !important;
+  color: var(--crt-accent) !important;
+}
+.hw-btn-accent:hover {
+  background: var(--crt-dim) !important;
+  color: #fff !important;
+}
+
+/* -------------------------------------------------------------
+   6. 关机遮罩与 CRT 开关启动动画 (Power State Transitions)
+   ------------------------------------------------------------- */
+.crt-power-off-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #020304;
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.4s ease;
+}
+
+.crt-screen.powered-on .crt-power-off-mask {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* 开机水平扩展动画 */
+@keyframes crt-turn-on {
+  0% {
+    transform: scale(1, 0.003);
+    filter: brightness(25);
+    opacity: 0.2;
+  }
+  40% {
+    transform: scale(1, 0.003);
+    filter: brightness(15);
+    opacity: 1;
+  }
+  75% {
+    transform: scale(1, 0.06);
+    filter: brightness(5);
+  }
+  100% {
+    transform: scale(1, 1);
+    filter: brightness(1);
+  }
+}
+
+/* 关机水平塌陷动画 */
+@keyframes crt-turn-off {
+  0% {
+    transform: scale(1, 1);
+    filter: brightness(1);
+  }
+  30% {
+    transform: scale(1, 0.005);
+    filter: brightness(6);
+  }
+  70% {
+    transform: scale(0.005, 0.005);
+    filter: brightness(20);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0, 0);
+    opacity: 0;
+  }
+}
+
+.crt-screen.animating-on .terminal-content {
+  animation: crt-turn-on 0.65s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+.crt-screen.animating-off .terminal-content {
+  animation: crt-turn-off 0.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+.off-prompt-box {
+  text-align: center;
+  padding: 30px;
+  border: 1px dashed #2d333b;
+  border-radius: 6px;
+  background: #07090b;
+  max-width: 440px;
+}
+.warning-triangle {
+  font-size: 2.2rem;
+  color: #704d0a;
+  margin-bottom: 8px;
+}
+.off-title {
+  font-family: var(--font-pixel);
+  font-size: 1.6rem;
+  letter-spacing: 2px;
+  color: #495463;
+  margin-bottom: 6px;
+}
+.off-hint {
+  font-size: 0.75rem;
+  color: #3b4450;
+  letter-spacing: 1px;
+}
+
+/* -------------------------------------------------------------
+   7. 终端屏幕内部工作台 (Terminal Content)
+   ------------------------------------------------------------- */
+.terminal-content {
+  flex: 1;
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  color: var(--crt-primary);
+  text-shadow: 0 0 3px var(--crt-glow);
+  overflow-y: auto;
+  z-index: 5;
+}
+
+/* 顶部状态提示行 */
+.term-status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--crt-dim);
+  padding-bottom: 6px;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  gap: 8px;
+}
+
+.mode-display {
+  color: var(--crt-accent);
+  font-weight: bold;
+}
+
+/* 双轨仪表舱 (Visualizer Deck: Scope + Analog VU Meter) */
+.visualizer-deck {
+  display: grid;
+  grid-template-columns: 1fr 220px;
+  gap: 10px;
+}
+@media (max-width: 900px) {
+  .visualizer-deck {
+    grid-template-columns: 1fr;
+  }
+}
+
+.oscilloscope-panel,
+.vu-meter-panel {
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid var(--crt-dim);
+  border-radius: 3px;
+  padding: 6px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.scope-header,
+.vu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.65rem;
+  letter-spacing: 1px;
+}
+.scope-state {
+  color: var(--crt-accent);
+}
+.vu-title {
+  color: var(--crt-dim);
+}
+.vu-peak-slot {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.vu-peak-led {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #3a1010;
+  border: 1px solid #551515;
+  transition: all 0.06s ease;
+}
+.vu-peak-led.active {
+  background: #ff2222;
+  box-shadow: 0 0 6px #ff2222, 0 0 10px #ff4444;
+}
+.vu-peak-tag {
+  font-size: 0.58rem;
+  color: #662626;
+  letter-spacing: 0.5px;
+}
+.vu-peak-led.active + .vu-peak-tag {
+  color: #ff5555;
+  text-shadow: 0 0 4px rgba(255, 85, 85, 0.7);
+}
+
+#scope-canvas,
+#vu-canvas {
+  width: 100%;
+  height: 38px;
+  background: #020603;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 2px;
+}
+
+/* 输入与输出双区域工作区 */
+.term-workspace {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.console-box {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--crt-dim);
+  border-radius: 4px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.box-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.72rem;
+  letter-spacing: 1px;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+  padding-bottom: 4px;
+}
+
+.box-tools {
+  display: flex;
+  gap: 8px;
+}
+
+.term-text-btn {
+  background: transparent;
+  border: none;
+  color: var(--crt-primary);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: all 0.15s;
+}
+.term-text-btn:hover {
+  opacity: 1;
+  text-shadow: 0 0 6px var(--crt-glow);
+  color: #fff;
+}
+
+/* 拟物 CRT 文本框 */
+.term-textarea {
+  width: 100%;
+  min-height: 86px;
+  background: transparent;
+  border: none;
+  color: var(--crt-primary);
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  line-height: 1.45;
+  resize: vertical;
+  outline: none;
+  caret-color: var(--crt-accent);
+  text-shadow: 0 0 3px var(--crt-glow);
+}
+
+.term-textarea::placeholder {
+  color: var(--crt-dim);
+  opacity: 0.6;
+}
+
+.term-textarea.output-area {
+  min-height: 94px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* 动作操作与遥测信息中间条 */
+.term-action-divider {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 2px 4px;
+  font-size: 0.75rem;
+}
+
+.telemetry-info {
+  display: flex;
+  gap: 14px;
+}
+.telemetry-info b {
+  color: var(--crt-accent);
+}
+
+.action-buttons-rack {
+  display: flex;
+  gap: 10px;
+}
+
+.action-btn {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--crt-dim);
+  color: var(--crt-primary);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  padding: 5px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  text-shadow: 0 0 3px var(--crt-glow);
+  transition: all 0.15s ease;
+}
+.action-btn:hover {
+  background: var(--crt-dim);
+  color: #000;
+  text-shadow: none;
+  box-shadow: 0 0 8px var(--crt-glow);
+}
+.action-btn.morse-btn {
+  border-color: var(--crt-accent);
+  color: var(--crt-accent);
+}
+.action-btn.morse-btn.playing {
+  background: var(--crt-accent);
+  color: #000;
+  animation: pulse-morse 0.5s infinite alternate;
+}
+
+.action-btn.btn-export {
+  border-color: #3b82f6;
+  color: #93c5fd;
+}
+.action-btn.btn-export:hover {
+  background: #2563eb;
+  color: #fff;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.7);
+}
+
+.morse-speed-box {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--crt-dim);
+  border-radius: 3px;
+  padding: 2px 6px;
+  font-size: 0.68rem;
+}
+.speed-tag {
+  color: var(--crt-dim);
+}
+.hw-select {
+  background: transparent;
+  border: none;
+  color: var(--crt-accent);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  outline: none;
+  cursor: pointer;
+}
+.hw-select option {
+  background: #111418;
+  color: #c0c6ce;
+}
+
+@keyframes pulse-morse {
+  0% { box-shadow: 0 0 4px var(--crt-glow); }
+  100% { box-shadow: 0 0 16px var(--crt-glow); }
+}
+
+/* 历史存根抽屉 (Data Log Vault) */
+.history-vault-panel {
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid var(--crt-dim);
+  border-radius: 4px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.72rem;
+  border-bottom: 1px solid var(--crt-dim);
+  padding-bottom: 4px;
+}
+
+.history-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 140px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* 极具工业感的滚动条 */
+.history-list::-webkit-scrollbar,
+.terminal-content::-webkit-scrollbar {
+  width: 6px;
+}
+.history-list::-webkit-scrollbar-thumb,
+.terminal-content::-webkit-scrollbar-thumb {
+  background: var(--crt-dim);
+  border-radius: 2px;
+}
+
+.history-empty {
+  font-size: 0.72rem;
+  color: var(--crt-dim);
+  padding: 8px 0;
+  text-align: center;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  padding: 5px 8px;
+  border-radius: 2px;
+  font-size: 0.72rem;
+  gap: 8px;
+}
+
+.history-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 170px;
+}
+.item-time {
+  color: var(--crt-dim);
+}
+.item-mode {
+  color: var(--crt-accent);
+  font-weight: bold;
+}
+
+.history-preview {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--crt-primary);
+  opacity: 0.85;
+}
+
+.item-btns {
+  display: flex;
+  gap: 6px;
+}
+
+/* -------------------------------------------------------------
+   8. 底栏工业脚注 (Chassis Footer)
+   ------------------------------------------------------------- */
+.chassis-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.68rem;
+  color: #6d7785;
+  border-top: 1px solid #282d35;
+  padding-top: 8px;
+}
+
+.footer-left {
+  display: flex;
+  gap: 16px;
+}
+
+.status-msg {
+  color: #9aa5b5;
+  font-weight: bold;
+}
