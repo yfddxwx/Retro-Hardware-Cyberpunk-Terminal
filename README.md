@@ -2,6 +2,9 @@
 ### Retro Hardware Cyberpunk Teletype Terminal & Realtime Data Codec
 
 <p align="center">
+  <a href="https://github.com/yfddxwx/Retro-Hardware-Cyberpunk-Terminal/actions/workflows/ci.yml">
+    <img src="https://github.com/yfddxwx/Retro-Hardware-Cyberpunk-Terminal/actions/workflows/ci.yml/badge.svg" alt="CI Status" />
+  </a>
   <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="MIT License" />
   <img src="https://img.shields.io/badge/TypeScript-5.4-blue.svg?logo=typescript" alt="TypeScript" />
   <img src="https://img.shields.io/badge/Vite-5.2-purple.svg?logo=vite" alt="Vite" />
